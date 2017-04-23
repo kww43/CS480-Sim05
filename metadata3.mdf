@@ -1,0 +1,55 @@
+Start Program Meta-Data Code:
+S(start)0; A(start)0; P(run)13; P(run)8; P(run)13; 
+P(run)13; P(run)12; I(keyboard)100; P(run)6; P(run)6; P(run)14; 
+P(run)6; P(run)7; P(run)14; P(run)12; P(run)7; P(run)12; 
+P(run)11; P(run)6; P(run)8; P(run)8; P(run)10; P(run)9; 
+P(run)13; P(run)11; P(run)10; P(run)9; P(run)7; P(run)6; 
+P(run)7; P(run)12; P(run)11; P(run)14; P(run)15; P(run)12; 
+P(run)12; P(run)15; P(run)14; P(run)13; P(run)10; P(run)7; 
+P(run)10; P(run)8; P(run)5; P(run)10; P(run)15; P(run)5; 
+P(run)6; I(keyboard)120; P(run)9; I(keyboard)80; P(run)8; 
+P(run)15; P(run)5; P(run)10; P(run)9; P(run)15; P(run)6; 
+P(run)7; P(run)7; P(run)6; P(run)7; P(run)7; P(run)8; P(run)5; 
+P(run)11; P(run)8; P(run)6; P(run)10; P(run)5; P(run)10; 
+P(run)12; P(run)10; P(run)12; P(run)9; P(run)12; P(run)5; 
+P(run)13; P(run)10; P(run)12; I(keyboard)110; P(run)14; 
+P(run)14; P(run)11; P(run)6; P(run)14; P(run)8; P(run)7; 
+O(printer)40; P(run)12; P(run)15; P(run)8; P(run)9; P(run)8; 
+P(run)7; P(run)7; P(run)12; P(run)15; P(run)11; P(run)5; 
+P(run)15; P(run)9; P(run)12; P(run)9; P(run)5; P(run)13; 
+P(run)12; P(run)8; P(run)9; P(run)7; P(run)9; P(run)15; 
+P(run)12; P(run)5; P(run)10; P(run)7; P(run)14; P(run)6; 
+P(run)10; P(run)5; O(hard drive)15; P(run)9; P(run)12; P(run)9; 
+P(run)7; P(run)15; P(run)10; P(run)12; P(run)11; P(run)7; 
+O(printer)45; I(hard drive)27; P(run)15; P(run)8; O(printer)35; 
+P(run)5; P(run)8; P(run)7; P(run)8; P(run)7; P(run)5; P(run)5; 
+P(run)8; P(run)11; P(run)7; P(run)13; P(run)6; P(run)12; 
+P(run)15; P(run)14; P(run)11; P(run)6; I(hard drive)33; 
+O(printer)75; P(run)15; P(run)14; P(run)13; P(run)15; P(run)14; 
+P(run)6; P(run)14; P(run)6; P(run)11; P(run)7; P(run)5; 
+P(run)12; P(run)8; P(run)6; P(run)6; P(run)9; P(run)7; 
+I(keyboard)90; P(run)13; P(run)13; O(printer)65; P(run)13; P(run)7; 
+O(hard drive)30; P(run)5; P(run)11; P(run)10; P(run)14; P(run)9; 
+I(keyboard)60; I(keyboard)90; P(run)14; P(run)12; P(run)13; P(run)14; 
+P(run)6; P(run)10; P(run)11; P(run)15; O(monitor)28; P(run)13; 
+I(keyboard)130; O(printer)75; P(run)11; P(run)15; I(keyboard)150; 
+P(run)15; P(run)6; P(run)13; P(run)10; P(run)9; P(run)8; 
+O(printer)35; P(run)9; P(run)7; P(run)11; P(run)12; P(run)12; 
+P(run)10; P(run)11; P(run)8; P(run)7; P(run)8; P(run)6; P(run)8; 
+P(run)15; P(run)15; O(printer)55; P(run)15; P(run)15; P(run)7; 
+O(printer)50; P(run)5; P(run)14; P(run)9; P(run)6; P(run)13; 
+P(run)5; P(run)12; P(run)5; P(run)12; I(keyboard)110; P(run)15; 
+P(run)14; P(run)6; I(hard drive)39; P(run)9; P(run)11; P(run)9; 
+P(run)15; P(run)12; I(hard drive)36; P(run)13; P(run)7; P(run)6; 
+I(keyboard)100; P(run)10; P(run)15; P(run)7; P(run)9; P(run)15; 
+P(run)6; P(run)5; O(printer)55; P(run)9; P(run)8; P(run)15; 
+I(hard drive)30; P(run)14; P(run)13; P(run)9; P(run)9; P(run)13; 
+P(run)12; P(run)13; P(run)8; P(run)15; I(keyboard)80; P(run)7; 
+P(run)7; P(run)10; P(run)8; P(run)15; P(run)10; P(run)8; 
+P(run)6; P(run)11; I(keyboard)50; P(run)15; P(run)12; P(run)15; 
+P(run)5; P(run)14; P(run)13; P(run)14; P(run)8; P(run)13; 
+P(run)5; P(run)14; P(run)13; P(run)15; P(run)10; P(run)9; 
+P(run)8; P(run)13; P(run)14; P(run)6; O(printer)40; A(end)0; 
+S(end)0.
+End Program Meta-Data Code.
+

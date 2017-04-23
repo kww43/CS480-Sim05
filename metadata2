@@ -1,0 +1,37 @@
+Start Program Meta-Data Code:
+S(start)0; A(start)0; I(keyboard)90; P(run)7; P(run)9;
+P(run)8; P(run)5; P(run)11; P(run)10; P(run)5; P(run)11;
+P(run)11; P(run)7; P(run)8; P(run)7; P(run)10; P(run)7;
+P(run)10; I(hard drive)36; P(run)10; P(run)8; P(run)15; P(run)9;
+P(run)10; P(run)15; P(run)14;  P(run)12; P(run)5; P(run)15;
+I(keyboard)130; P(run)14; P(run)10; P(run)15; P(run)11; P(run)15;
+P(run)9; P(run)9; P(run)5; P(run)15; P(run)12; P(run)7;
+P(run)14; P(run)15; P(run)6; I(hard drive)33; P(run)14; P(run)8;
+P(run)15; P(run)14; P(run)10; P(run)6; P(run)13; P(run)11;
+P(run)14; P(run)7; P(run)7; P(run)5; P(run)12; P(run)11;
+P(run)13; P(run)9; P(run)15; P(run)7; P(run)8; P(run)7;
+P(run)14; O(monitor)26; P(run)7; P(run)6; P(run)14; P(run)5;
+P(run)11; P(run)7; P(run)11; P(run)8; P(run)15; P(run)6;
+P(run)14; P(run)15; P(run)12; P(run)13; P(run)10; P(run)13;
+P(run)15; P(run)10; P(run)13; O(hard drive)24; P(run)10;
+P(run)10; P(run)13; P(run)8; P(run)6; P(run)12; P(run)8;
+P(run)15; P(run)6; P(run)6; P(run)14; P(run)10; P(run)12;
+P(run)9; P(run)10; P(run)6; P(run)8; P(run)8; P(run)5;
+P(run)13; P(run)10; P(run)13; P(run)10; P(run)12; O(printer)60;
+P(run)11; P(run)8; P(run)6; P(run)15; P(run)6; P(run)15;
+P(run)13; P(run)8; P(run)11; P(run)11; P(run)15; P(run)9;
+P(run)14; P(run)9; P(run)12; P(run)5; O(monitor)22; P(run)11;
+P(run)5; P(run)5; P(run)14; I(keyboard)70; P(run)11; P(run)12;
+P(run)6; P(run)9; P(run)8; P(run)9; P(run)14; O(printer)75;
+P(run)9; P(run)12; P(run)13; P(run)6; P(run)10; P(run)9;
+P(run)7; P(run)13; P(run)5; P(run)6; P(run)13; P(run)15;
+P(run)13; P(run)5; P(run)5; P(run)7; A(end)0; A(start)0; P(run)13; P(run)11;
+P(run)10; P(run)13; I(keyboard)60; P(run)15; P(run)6; P(run)8;
+P(run)12; P(run)5; P(run)11; P(run)11; P(run)14; P(run)7;
+P(run)13; P(run)13; P(run)5; P(run)9; P(run)5; O(printer)40;
+P(run)12; P(run)15; P(run)13; P(run)11; P(run)6; O(printer)70;
+P(run)14; P(run)8; P(run)10; P(run)9; P(run)13; P(run)15;
+P(run)8; P(run)9; P(run)6; P(run)12; P(run)6; P(run)5; P(run)7;
+P(run)10; P(run)14; P(run)6; P(run)12; P(run)12; A(end)0;
+S(end)0.
+End Program Meta-Data Code.
