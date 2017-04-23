@@ -96,7 +96,26 @@ int main(int argc, char *argv[])
 
   //Start the process manager
   printf("Begin Simulator\n\n");
-  processManager(configFile, metaDataFile, PCB);
+
+  if(strcmp(configFile->CPUSched, "FCFS-N") == 0 || strcmp(configFile->CPUSched, "SJF-N") == 0)
+  {
+    processManager(configFile, metaDataFile, PCB);
+  }
+
+  else if(strcmp(configFile->CPUSched, "FCFS-P") == 0)
+  {
+    processFCFS_P(configFile, metaDataFile, PCB);
+  }
+
+  else if(strcmp(configFile->CPUSched, "SRTF-P") == 0)
+  {
+    processSRTF_P(configFile, metaDataFile, PCB);
+  }
+
+  else if(strcmp(configFile->CPUSched, "RR-P") == 0)
+  {
+    processRR_P(configFile, metaDataFile, PCB);
+  }
 
   //End the Simulation
   printf("\nEnd Simulation\n\n");

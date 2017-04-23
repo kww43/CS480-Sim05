@@ -368,6 +368,21 @@ void processManager(struct CONFIGFILE *config, struct METAFILE *metaData, struct
   fclose(logToFile);
 }
 
+void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB)
+{
+  //TODO
+}
+
+void processSRTF_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB)
+{
+  //TODO
+}
+
+void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB)
+{
+  //TODO
+}
+
 //HELPER FUNCTIONS//////////////////////////////////////////////////////////////////
 
 /*

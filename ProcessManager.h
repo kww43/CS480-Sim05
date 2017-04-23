@@ -38,8 +38,11 @@ struct METAFILE;
 
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////
 
-/* Main function for ProcessManager.c/h */
+/* Main functions for ProcessManager.c/h */
 void processManager(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB);
+void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB);
+void processSRTF_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB);
+void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB);
 
 /* Helper Function for ProcessManager.c/h */
 void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
