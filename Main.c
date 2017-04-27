@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   printf("Now loading meta data file.....\n\n");
   int totalProcesses = 0;
   struct PROCESSES *PCB;
-  struct METAFILE *metaDataFile = uploadMetaData(metaDataFH, &PCB, &totalProcesses);
+  struct METAFILE *metaDataFile = uploadMetaData(metaDataFH, &PCB, &totalProcesses, configFile);
 
   if(strcmp(configFile->CPUSched, "SJF-N") == 0)
   {

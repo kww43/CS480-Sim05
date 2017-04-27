@@ -127,10 +127,12 @@
  *  Return     : The linked list containing the stored meta data.
  * =====================================================================================
  */
-struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalProcesses)
+struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalProcesses,
+                                struct CONFIGFILE *config)
 {
   //Used to read through the meta data file
-  struct METAFILE *currentLink = NULL; //
+  struct METAFILE *currentLink = NULL;
+  double currentCycleTime;
   int cmdCounter = 0;
   char fileReader;        //To iterate through the file
   int charInSTR = 0;      //Characters in the current buffer
@@ -263,7 +265,16 @@ struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalPr
         }
         else if(currentLink->cmdLetter != 'M' && currentLink->cmdLetter != 'S')
         {
-            currentPCB->totalRunTime += currentLink->cycleTime;
+          if(currentLink->cmdLetter == 'P')
+          {
+            currentCycleTime = currentLink->cycleTime * config->processTime;
+            currentPCB->totalRunTime += currentCycleTime;
+          }
+          else if(currentLink->cmdLetter == 'I' || currentLink->cmdLetter == 'O')
+          {
+            currentCycleTime = currentLink->cycleTime * config->ioTime;
+            currentPCB->totalRunTime += currentCycleTime;
+          }
         }
 
         //Last meta data command if its followed by a '.' instead of a ';'

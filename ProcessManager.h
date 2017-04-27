@@ -45,6 +45,8 @@ void processSRTF_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
 void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
 
 /* Helper Function for ProcessManager.c/h */
+void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
+             int processNum, struct METAFILE *currentMetaData, int stringType);
 void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 struct METAFILE* waitTillCMD(struct METAFILE *headMetaData, int cmdNumber);

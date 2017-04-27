@@ -1,6 +1,6 @@
 Start Simulator Configuration File
 Version/Phase: 1.5
-File Path: metadata2
+File Path: metadata
 CPU Scheduling Code: FCFS-P
 Quantum Time (cycles): 55
 Memory Available (KB): 667

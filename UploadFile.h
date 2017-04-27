@@ -64,7 +64,8 @@ struct PROCESSES //The Process control block
 
 /*Main functions*/
 void uploadConfig(struct CONFIGFILE *config, FILE *file);
-struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalProcesses);
+struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalProcesses,
+                                struct CONFIGFILE *config);
 
 /*Helper functions*/
 int handleInteger(FILE *file);
