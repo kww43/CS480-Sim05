@@ -378,10 +378,16 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   double timeOfDay;     //The timer for the simulator
   struct PROCESSES *headPCB = PCB; //Start of processes for the PCB
   struct PROCESSES *currentPCB = PCB; //Current process for the PCB
-  struct THREAD_INFO *currentThread = malloc(sizeof(struct THREAD_INFO)); //Current thread
+  //struct THREAD_INFO *currentThread = malloc(sizeof(struct THREAD_INFO)); //Current thread
   FILE* logToFile = fopen(config->logFile ,"w"); //The log file handle to write to
   pthread_t threadIO; //IO Thread
-  pthread_t threadP; //Processor Thread
+  //pthread_t threadP; //Processor Thread
+  struct THREAD_INFO *currentThread[totalProcesses];
+  //initialize the array of thread structs
+  for (int index = 0; index < totalProcesses; index++)
+  {
+    currentThread[index] = malloc(sizeof(struct THREAD_INFO));
+  }
 
   //Intialize the time and start the system
   timeOfDay = 0.000000;
@@ -446,6 +452,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   while(currentPCB != NULL)
   {
     currentPCB->state = READY;
+    currentPCB->currentCMD = currentPCB->appStart;
     currentPCB = currentPCB->nextProcess;
   }
   currentPCB = headPCB;
@@ -491,11 +498,21 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       currentPCB = currentPCB->nextProcess;
       if (currentPCB == NULL)
       {
-        processReturning = -1;
+        //continuously check for interrupts
+        processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
         while(processReturning == -1)
         {
             //IDLE and check for interupts
             processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
+        }
+
+        //empty out interruptQueue
+        while(processReturning != -1)
+        {
+          //go to process and set to ready
+          currentPCB = setProcessToReady(headPCB, processReturning);
+          currentPCB->state = READY;
+          processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
         }
         currentPCB = headPCB;
       }
@@ -504,6 +521,10 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
         //nothing
       }
     }
+    //get next process
+    currentMetaData = waitTillCMD(headMetaData, currentPCB->currentCMD);
+    currentPCB->currentCMD = currentPCB->currentCMD + 1;
+    currentPCB->state = RUNNING;
 
     //Handle I/O operation
     if(currentMetaData->cmdLetter == 'O' || currentMetaData->cmdLetter == 'I')
@@ -552,23 +573,21 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
          config file's I/O cycle time */
       timeForCycle = ((double) currentMetaData->cycleTime * (double) config->ioTime) / 100000;
 
-      currentThread->procID = currentPCB->processNumber;
-      currentThread->totalProcesses = totalProcesses;
-      currentThread->cmdLetter = currentMetaData->cmdLetter;
-      currentThread->descriptor = currentMetaData->descriptor;
-      currentThread->waitTime = timeForCycle;
-      currentThread->currentTime = timeOfDay;
-      currentThread->logTo = config->logTo;
+      currentThread[currentPCB->processNumber]->procID = currentPCB->processNumber;
+      currentThread[currentPCB->processNumber]->totalProcesses = totalProcesses;
+      currentThread[currentPCB->processNumber]->cmdLetter = currentMetaData->cmdLetter;
+      currentThread[currentPCB->processNumber]->descriptor = currentMetaData->descriptor;
+      currentThread[currentPCB->processNumber]->waitTime = timeForCycle;
+      currentThread[currentPCB->processNumber]->currentTime = timeOfDay;
+      currentThread[currentPCB->processNumber]->logTo = config->logTo;
 
       //Wait for time found from cycle time * I/O cycle time
-      pthread_create(&threadIO, NULL, (void *) &pause, (void *) currentThread);
+      pthread_create(&threadIO, NULL, (void *) &pause, (void *) currentThread[currentPCB->processNumber]);
       //pthread_join(threadIO, NULL);
 
       timeOfDay += timeForCycle;
     }
 
-
-    //processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
     //Handle Processor operation
     else if(currentMetaData->cmdLetter == 'P')
     {
@@ -650,12 +669,6 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
     printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, currentPCB->processNumber);
     completedProcesses++;
     if(completedProcesses == totalProcesses) {break;}
-    currentPCB = currentPCB->nextProcess;
-    currentMetaData = waitTillCMD(headMetaData, currentPCB->appStart);
-    currentPCB->state = RUNNING;
-    currentPCB->currentCMD = currentPCB->appStart;
-    timeOfDay += 0.0000004;
-    printf("Time: %.6lf, Process %d set in Running state.\n", timeOfDay, currentPCB->processNumber);
   }
   processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
   while(processReturning != -1)
@@ -663,12 +676,8 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
     //go to process and set to ready
     currentPCB = setProcessToReady(headPCB, processReturning);
     currentPCB->state = READY;
-    printf("%d\n", processReturning);
-    //headPCB->state = READY;
     processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
   }
-  currentMetaData = currentMetaData->nextCMD;
-  currentPCB->currentCMD = currentMetaData->cmdOrder;
  }
 
 
