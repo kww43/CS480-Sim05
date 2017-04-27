@@ -486,7 +486,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   while(completedProcesses < totalProcesses)
   {
     currentPCB = headPCB;
-    while(currentPCB->state == BLOCKED)
+    while(currentPCB->state == BLOCKED || currentPCB->state == EXIT)
     {
       currentPCB = currentPCB->nextProcess;
       if (currentPCB == NULL)
@@ -545,6 +545,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       }
 
       //block current process
+      printf("Time: %lf, Process %d set in Blocked State\n", timeOfDay, currentPCB->processNumber);
       currentPCB->state = BLOCKED;
 
       /* Get the time to wait for based on meta data operation cycle time * the
@@ -611,29 +612,6 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       }
     }
 
-    //Handle Aplication Start and end
-    else if(currentMetaData->cmdLetter == 'A')
-    {
-      //Wait for the time found from the cycle time
-      timeOfDay += 0.000001;
-
-
-      //Print out Start or End of Application
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-      }
-    }
-
     //Handle Memory Allocation
     else if(currentMetaData->cmdLetter == 'M')
     {
@@ -658,18 +636,16 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
 
   /* Adds a minor delay so that start operation is not the same of the last
      operation */
-  timeOfDay += 0.000005;
+  //timeOfDay += 0.000005;
 
   //Get the next meta data operation
-  currentMetaData = currentMetaData->nextCMD;
-  currentPCB->currentCMD = currentMetaData->cmdOrder;
+  //currentMetaData = currentMetaData->nextCMD;
+  //currentPCB->currentCMD = currentMetaData->cmdOrder;
 
-  if(currentMetaData->cmdLetter == 'A' && strcmp(currentMetaData->descriptor, "end") == 0)
+  else if(currentMetaData->cmdLetter == 'A'
+     && strcmp(currentMetaData->descriptor, "end") == 0
+     && currentPCB->state != BLOCKED)
   {
-    if(currentPCB->nextProcess == NULL)
-    {
-      //TODO IDLE
-    }
     currentPCB->state = EXIT;
     printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, currentPCB->processNumber);
     completedProcesses++;
@@ -685,10 +661,14 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   while(processReturning != -1)
   {
     //go to process and set to ready
-    //TODO setProcessToReady(headlink, processReturning);
-    headPCB->state = READY;
+    currentPCB = setProcessToReady(headPCB, processReturning);
+    currentPCB->state = READY;
+    printf("%d\n", processReturning);
+    //headPCB->state = READY;
     processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
   }
+  currentMetaData = currentMetaData->nextCMD;
+  currentPCB->currentCMD = currentMetaData->cmdOrder;
  }
 
 
@@ -861,6 +841,28 @@ void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, i
   {
     printf("Time: %.6lf, System Stop\n", timeOfDay);
   }
+}
+
+/*
+ * Name       : setProcessToReady
+ * Description: Goes to the process in the PCB based off its numerical order.
+ * Parameters : headPCB - The start of the meta data file.
+ *              cmdNumber - The meta data operation to go to in the file.
+ * return     : The meta data operation based off the number passed in.
+ */
+struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber)
+{
+  struct PROCESSES *tempLink = headPCB;
+
+  while(tempLink->processNumber != cmdNumber)
+  {
+    tempLink = tempLink->nextProcess;
+  }
+
+  tempLink->state = READY;
+  printf("Process %d set in Ready State\n", tempLink->processNumber);
+
+  return tempLink;
 }
 
 /*

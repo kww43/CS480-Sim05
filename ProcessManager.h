@@ -48,5 +48,6 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
 void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 struct METAFILE* waitTillCMD(struct METAFILE *headMetaData, int cmdNumber);
+struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber);
 
 #endif //end define for PROCESS_MANAGER_h

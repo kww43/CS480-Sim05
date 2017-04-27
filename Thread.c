@@ -68,19 +68,21 @@ int interuptHandler(InterruptCodes type, int procID, int totalProcesses)
   {
 
     case CHECK_INTERRUPT:
+
       if(interruptFlag == TRUE)
       {
-        while(increment < totalProcesses)
+        for(increment = 0; increment < totalProcesses; increment++)
         {
-          if(interuptQueue[increment] == increment)
+          if(increment == interuptQueue[increment])
           {
-            //TODO HANDLE INTERRUPT
-            printf("Interrupt for Process %d Found.\n", increment);
             interuptQueue[increment] = -1;
+            return increment;
           }
-          increment++;
+          else if(increment == totalProcesses-1)
+          {
+            interruptFlag = FALSE;
+          }
         }
-        interruptFlag = FALSE;
       }
       else // Interupt flag is set to false
       {
