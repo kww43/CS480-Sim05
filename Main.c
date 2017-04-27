@@ -71,8 +71,9 @@ int main(int argc, char *argv[])
 
   //Upload and store the meta data file
   printf("Now loading meta data file.....\n\n");
+  int totalProcesses = 0;
   struct PROCESSES *PCB;
-  struct METAFILE *metaDataFile = uploadMetaData(metaDataFH, &PCB);
+  struct METAFILE *metaDataFile = uploadMetaData(metaDataFH, &PCB, &totalProcesses);
 
   if(strcmp(configFile->CPUSched, "SJF-N") == 0)
   {
@@ -91,30 +92,30 @@ int main(int argc, char *argv[])
 
   //Intialize the ready queue
   struct Queue *queueInfo = malloc(sizeof(struct Queue));
-  int que[10];
-  initFCFS(queueInfo, que, 10);
+  int que[totalProcesses];
+  initFCFS(queueInfo, que, totalProcesses);
 
   //Start the process manager
   printf("Begin Simulator\n\n");
 
   if(strcmp(configFile->CPUSched, "FCFS-N") == 0 || strcmp(configFile->CPUSched, "SJF-N") == 0)
   {
-    processManager(configFile, metaDataFile, PCB);
+    processManager(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "FCFS-P") == 0)
   {
-    processFCFS_P(configFile, metaDataFile, PCB);
+    processFCFS_P(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "SRTF-P") == 0)
   {
-    processSRTF_P(configFile, metaDataFile, PCB);
+    processSRTF_P(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "RR-P") == 0)
   {
-    processRR_P(configFile, metaDataFile, PCB);
+    processRR_P(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   //End the Simulation

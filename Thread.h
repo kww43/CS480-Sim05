@@ -32,6 +32,17 @@ typedef enum {SEND_INTERRUPT, CHECK_INTERRUPT} InterruptCodes;
 
 //STRUCTRES DEFINED////////////////////////////////////////////////////////////////////
 
+struct THREAD_INFO
+{
+  int procID; //The process ID
+  double waitTime;
+  char cmdLetter;
+  char* descriptor;
+  double currentTime;
+  int totalProcesses;
+  char* logTo;
+};
+
 /* These structure need to also be defined here for program to compile and run
    with no errors. */
 struct PROCESSES;
@@ -40,8 +51,9 @@ struct METAFILE;
 
 
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////
-void * pause(void *ptr);
-void interuptHandler(InterruptCodes type, int procID);
+void *pause(void *ptr);
+int interuptHandler(InterruptCodes type, int procID, int totalProcesses);
+void printThread(struct THREAD_INFO *thread);
 
 
 #endif //End if THREAD_H

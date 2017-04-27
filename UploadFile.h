@@ -56,14 +56,15 @@ struct PROCESSES //The Process control block
   struct PROCESSES *nextProcess; //The process that follows after it
   int processNumber;             //The ID number of the process
   int totalRunTime;              //The total cycle time for that process
-  enum ProcesState {NEW, READY, RUNNING, EXIT} state; //the state of the process
+  enum ProcesState {NEW, READY, RUNNING, BLOCKED, EXIT} state; //the state of the process
+  int totalProcesses;
 };
 
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////
 
 /*Main functions*/
 void uploadConfig(struct CONFIGFILE *config, FILE *file);
-struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB);
+struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalProcesses);
 
 /*Helper functions*/
 int handleInteger(FILE *file);

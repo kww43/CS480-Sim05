@@ -31,17 +31,23 @@
  */
 void* pause(void *ptr)
 {
-  double* waitTime = (double *) ptr;
+  int returnVal;
+  struct THREAD_INFO* thread = (struct THREAD_INFO *) ptr;
+  double waitTime = thread->waitTime;
 
   clock_t start = clock();
 
-  while ((clock() - start) / CLOCKS_PER_SEC < (*waitTime));
+  while ((clock() - start) / CLOCKS_PER_SEC < (waitTime));
 
-  interuptHandler(SEND_INTERRUPT, 0); //TODO 0 is where process ID will be stored
+  returnVal = interuptHandler(SEND_INTERRUPT, thread->procID, thread->totalProcesses);
+  returnVal++; // Prevents compiler warning
+
+  printThread(thread);
 
   pthread_exit(0);
 }
 
+/********** UPDATED FUNCTION FOR SIM05 (# 1)***********/
 /*
  * Name       : interuptHandler
  * Description: Handles interupts based on the code sent to the function,
@@ -52,11 +58,11 @@ void* pause(void *ptr)
  *              CHECK_INTERRUPT - Is to check if the interupt flag has been set,
  *              and handles the interupts.
  */
-void interuptHandler(InterruptCodes type, int procID)
+int interuptHandler(InterruptCodes type, int procID, int totalProcesses)
 {
   int increment = 0;
   static Boolean interruptFlag = FALSE;
-  static int interuptQueue[200] = {-1};
+  static int interuptQueue[50] = {-1};
 
   switch(type)
   {
@@ -64,23 +70,53 @@ void interuptHandler(InterruptCodes type, int procID)
     case CHECK_INTERRUPT:
       if(interruptFlag == TRUE)
       {
-        while(increment < 200)
+        while(increment < totalProcesses)
         {
           if(interuptQueue[increment] == increment)
           {
             //TODO HANDLE INTERRUPT
+            printf("Interrupt for Process %d Found.\n", increment);
+            interuptQueue[increment] = -1;
           }
           increment++;
         }
         interruptFlag = FALSE;
+      }
+      else // Interupt flag is set to false
+      {
+        return -1;
       }
       break;
 
     case SEND_INTERRUPT:
       interruptFlag = TRUE;
       interuptQueue[procID] = procID;
+      printf("Process %d Set in Interupt Queue\n", interuptQueue[procID]);
+      return -1;
       break;
   }
+
+  return -1;
 }
+
+void printThread(struct THREAD_INFO *thread)
+{
+  double timeOfDay = thread->currentTime + thread->waitTime;
+  int processID = thread->procID;
+  char* descriptor = thread->descriptor;
+
+  //Print out Output operation end
+  if(thread->cmdLetter == 'O')
+  {
+      printf("Time: %.6lf, Process %d %s output end\n", timeOfDay, processID, descriptor);
+  }
+
+  //Print out Input operation end
+  else if(thread->cmdLetter == 'I')
+  {
+      printf("Time: %.6lf, Process %d %s input end\n", timeOfDay, processID, descriptor);
+  }
+}
+
 
 #endif

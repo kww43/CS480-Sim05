@@ -127,7 +127,7 @@
  *  Return     : The linked list containing the stored meta data.
  * =====================================================================================
  */
-struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB)
+struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB, int *totalProcesses)
 {
   //Used to read through the meta data file
   struct METAFILE *currentLink = NULL; //
@@ -243,6 +243,7 @@ struct METAFILE *uploadMetaData(FILE *file, struct PROCESSES **PCB)
         //Handle differnt processes
         if(tempLink->cmdLetter == 'A' && strcmp(tempLink->descriptor, "start") == 0)
         {
+          *totalProcesses += 1;
           struct PROCESSES *tempPCB;
           tempPCB = (struct PROCESSES *) malloc(sizeof(struct PROCESSES));
           tempPCB = malloc(sizeof(struct PROCESSES));
