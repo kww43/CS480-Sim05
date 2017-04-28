@@ -391,35 +391,11 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
 
   //Intialize the time and start the system
   timeOfDay = 0.000000;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 0);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 0);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 0);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 0);
-  }
+  printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 0);
 
   //Create the process
   timeOfDay += 0.000005;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 1);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 1);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 1);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 1);
-  }
+  printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 1);
 
 
   //Set Processes to new state
@@ -431,19 +407,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   }
   currentPCB = headPCB;
   //Print the result of setting processes to new state
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 2);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 2);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 2);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 2);
-  }
+  printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 2);
 
 
   //Set Processes to Ready state
@@ -457,36 +421,12 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   }
   currentPCB = headPCB;
   //Print the result of setting processes to ready state
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 3);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 3);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 3);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 3);
-  }
+  printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 3);
 
   //Set a Process to Running state
   timeOfDay += 0.000006;
   currentPCB->state = RUNNING;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 4);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 4);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 4);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 4);
-  }
+  printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 4);
 
   currentMetaData = waitTillCMD(headMetaData, currentPCB->appStart);
   int processReturning;
@@ -538,41 +478,17 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       //Print out start of Output Operation
       if(currentMetaData->cmdLetter == 'O')
       {
-        if(strcmp(config->logTo, "Monitor") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-        }
-        else if(strcmp(config->logTo, "File") == 0)
-        {
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-        }
-        else if(strcmp(config->logTo, "Both") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-        }
+        printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 5);
       }
 
       //Print out start of Input Operation
       else if(currentMetaData->cmdLetter == 'I')
       {
-        if(strcmp(config->logTo, "Monitor") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-        }
-        else if(strcmp(config->logTo, "File") == 0)
-        {
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-        }
-        else if(strcmp(config->logTo, "Both") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-        }
+        printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 6);
       }
 
       //block current process
-      printf("Time: %lf, Process %d set in Blocked State\n", timeOfDay, currentPCB->processNumber);
+      printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 15);
       currentPCB->state = BLOCKED;
 
       /* Get the time to wait for based on meta data operation cycle time * the
@@ -598,19 +514,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
     else if(currentMetaData->cmdLetter == 'P')
     {
       //Print out start for processor operation
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-      }
+      printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 9);
 
       //Get the cycle time from operation cycle time * config file's processor time
       timeForCycle = ((double) currentMetaData->cycleTime * (double) config->processTime) / 100000;
@@ -622,19 +526,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       timeOfDay += timeForCycle + 1;
 
       //Print out end for processor operation
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-      }
+        printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 11);
     }
 
     //Handle Memory Allocation
@@ -644,19 +536,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       timeOfDay += 0.000001;
 
       //Print out the time for Memory management action
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-      }
+      printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
     }
 
   /* Adds a minor delay so that start operation is not the same of the last
@@ -672,7 +552,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
      && currentPCB->state != BLOCKED)
   {
     currentPCB->state = EXIT;
-    printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, currentPCB->processNumber);
+    printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 14);
     completedProcesses++;
     if(completedProcesses == totalProcesses) {break;}
   }
@@ -689,19 +569,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
 
    //System stop
    timeOfDay += 0.000010;
-   if(strcmp(config->logTo, "Monitor") == 0)
-   {
-     printMonitor(timeOfDay, 0, currentMetaData, 13);
-   }
-   else if(strcmp(config->logTo, "File") == 0)
-   {
-     printFile(logToFile, timeOfDay, 0, currentMetaData, 13);
-   }
-   else if(strcmp(config->logTo, "Both") == 0)
-   {
-     printMonitor(timeOfDay, 0, currentMetaData, 13);
-     printFile(logToFile, timeOfDay, 0, currentMetaData, 13);
-   }
+    printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 13);
    fclose(logToFile);
 }
 
@@ -716,6 +584,24 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
 }
 
 //HELPER FUNCTIONS//////////////////////////////////////////////////////////////////
+
+void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
+           int processNum, struct METAFILE *currentMetaData, int stringType)
+{
+if(strcmp(config->logTo, "Monitor") == 0)
+{
+  printMonitor(timeOfDay, processNum, currentMetaData, stringType);
+}
+else if(strcmp(config->logTo, "File") == 0)
+{
+  printFile(logToFile, timeOfDay, processNum, currentMetaData, stringType);
+}
+else if(strcmp(config->logTo, "Both") == 0)
+{
+  printMonitor(timeOfDay, processNum, currentMetaData, stringType);
+  printFile(logToFile, timeOfDay, processNum, currentMetaData, stringType);
+}
+}
 
 /*
  * Name       : printFile
@@ -786,6 +672,14 @@ void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *m
   {
     fprintf(logTo, "Time: %.6lf, System Stop\n", timeOfDay);
   }
+  else if(stringType == 14)
+  {
+    fprintf(logTo, "Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, processNum);
+  }
+  else if(stringType == 15)
+  {
+    fprintf(logTo, "Time: %.6lf, Process %d set in Blocked state.\n", timeOfDay, processNum);
+  }
 }
 
 /*
@@ -855,6 +749,14 @@ void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, i
   else if(stringType == 13)
   {
     printf("Time: %.6lf, System Stop\n", timeOfDay);
+  }
+  else if(stringType == 14)
+  {
+    printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, processNum);
+  }
+  else if(stringType == 15)
+  {
+    printf("Time: %.6lf, Process %d set in Blocked state.\n", timeOfDay, processNum);
   }
 }
 

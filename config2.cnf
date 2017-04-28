@@ -1,7 +1,7 @@
 Start Simulator Configuration File
 Version/Phase: 2.23
-File Path: metadata3.mdf
-CPU Scheduling Code: NONE
+File Path: metadata
+CPU Scheduling Code: FCFS-P
 Quantum Time (cycles): 55
 Memory Available (KB): 667
 Processor Cycle Time (msec): 10
@@ -9,4 +9,3 @@ I/O Cycle Time (msec): 20
 Log To: Monitor
 Log File Path: logfile_1.lgf
 End Simulator Configuration File.
-
