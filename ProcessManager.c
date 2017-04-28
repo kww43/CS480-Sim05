@@ -232,8 +232,6 @@ void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, stru
    fclose(logToFile);
 }
 
-<<<<<<< HEAD
-=======
 void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
 {
   //Variables///////////////////////////////////////////////////////////////////
@@ -431,7 +429,6 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
    fclose(logToFile);
 }
 
->>>>>>> 4068f8848c9d36b7d91b759beb0863cdd4509691
 //HELPER FUNCTIONS//////////////////////////////////////////////////////////////////
 
 void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
