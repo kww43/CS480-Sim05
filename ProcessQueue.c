@@ -31,6 +31,32 @@ void initSRTF(struct Queue* queueInfo, int *que, int size, int arraySize)
 
 }
 
+void initRR(struct LinkedQueue *link ,int size)
+{
+	int increment;
+	struct LinkedQueue *temp;
+	struct LinkedQueue *current;
+	struct LinkedQueue *head;
+
+	for(increment = 0; increment < size; increment++)
+	{
+		temp = malloc(sizeof(struct LinkedQueue*));
+		temp->processID = increment;
+		if(current == NULL)
+		{
+			current = temp;
+			head = current;
+		}
+		else
+		{
+			current->nextProcess = temp;
+			current = temp;
+		}
+	}
+
+	link = head;
+}
+
 void insertEnd(struct Queue* queueInfo, int *queue, int size, int procID)
 {
 	if(queueInfo->end == size-1)
