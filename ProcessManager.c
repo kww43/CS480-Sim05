@@ -892,10 +892,11 @@ struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProces
   struct PROCESSES *tempHead;
   struct PROCESSES *currentPCB;
   struct PROCESSES *currentMinNode;
+  struct PROCESSES *tempStruct;
   double currentMin = -1;
   int outerLoop = 0;
   int innerLoop = 0;
-  
+
   for (outerLoop; outerLoop < totalProcesses; outerLoop++)
   {
     currentPCB = headPCB;
@@ -908,7 +909,7 @@ struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProces
       }
       else
       {
-        if ((currentPCB->totalRunTime < currentMin && currentPCB->prioritized != YES) || (currentMin == -1))
+        if (currentPCB->totalRunTime < currentMin && currentPCB->prioritized != YES || currentMin == -1)
         {
           //new mininmum
           currentMinNode = currentPCB;
@@ -918,23 +919,35 @@ struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProces
       currentPCB = currentPCB->nextProcess;
     }
 
+    currentMinNode->prioritized = YES;
     if (tempHead == NULL)
     {
-      tempHead = currentMinNode;
-      tempHead->prioritized = YES;
+      tempHead->appStart = currentMinNode->appStart;
+      tempHead->currentCMD = currentMinNode->currentCMD;
+      tempHead->processNumber = currentMinNode->processNumber;
+      tempHead->totalRunTime = currentMinNode->totalRunTime;
+      tempHead->state = currentMinNode->state;
+      tempHead->totalProcesses = currentMinNode->totalProcesses;
     }
     else
     {
       currentPCB = tempHead;
-      for(int index = 0; index < outerLoop - 1; index++)
+      while(currentPCB->nextProcess != NULL)
       {
         currentPCB = currentPCB->nextProcess;
       }
-      currentPCB->prioritized = YES;
-      currentPCB->nextProcess = currentMinNode;
+      tempStruct->appStart = currentMinNode->appStart;
+      tempStruct->currentCMD = currentMinNode->currentCMD;
+      tempStruct->processNumber = currentMinNode->processNumber;
+      tempStruct->totalRunTime = currentMinNode->totalRunTime;
+      tempStruct->state = currentMinNode->state;
+      tempStruct->totalProcesses = currentMinNode->totalProcesses;
+
+      currentPCB->nextProcess = tempStruct;
     }
-    printf("Current Min: %d\n", currentPCB->totalRunTime);
+    printf("Current Min: %d\n", currentMinNode->totalRunTime);
   }
+
   return headPCB;
 }
 
