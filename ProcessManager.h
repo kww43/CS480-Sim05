@@ -27,6 +27,7 @@
 #include "Main.h"
 #include "UploadFile.h"
 #include "Thread.h"
+#include "ProcessQueue.h"
 
 //STRUCTRES DEFINED////////////////////////////////////////////////////////////////////
 
