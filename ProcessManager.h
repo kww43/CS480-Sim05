@@ -27,7 +27,7 @@
 #include "Main.h"
 #include "UploadFile.h"
 #include "Thread.h"
-#include "ProcessQueue.h"
+#include "PrintOperations.h"
 
 //STRUCTRES DEFINED////////////////////////////////////////////////////////////////////
 
@@ -41,13 +41,11 @@ struct METAFILE;
 
 /* Main functions for ProcessManager.c/h */
 void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
+void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
 
 /* Helper Function for ProcessManager.c/h */
-void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
-             int processNum, struct METAFILE *currentMetaData, int stringType);
-void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
-void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 struct METAFILE* waitTillCMD(struct METAFILE *headMetaData, int cmdNumber);
-struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber);
+struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int processID);
 struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProcesses);
-#endif //end define for PROCESS_MANAGER_h
+
+#endif

@@ -25,7 +25,8 @@
 #include "UploadFile.h"
 #include "ProcessManager.h"
 #include "Thread.h"
-#include "ProcessQueue.h"
+#include "NonPremptive.h"
+#include "PrintOperations.h"
 
 // Boolean ////////////////////////////////////////////////////////////////////////////
 typedef enum {FALSE, TRUE} Boolean;

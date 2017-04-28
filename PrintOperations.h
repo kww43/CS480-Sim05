@@ -1,22 +1,22 @@
 /*
  * =====================================================================================
  *
- *       Filename:  Thread.
+ *       Filename:  PrintOperations.h
  *
- *    Description:  Header for Thread.c
+ *    Description:  Header file for PrintOperations.c
  *
- *        Version:  4.0
+ *        Version:  2.0
+ *        Created:  02/04/2017 09:27:30 PM
  *       Revision:  none
  *       Compiler:  gcc
- *
  *
  *
  * =====================================================================================
  */
 
-// Precompiler directives /////////////////////////////////////////////////////////////
-#ifndef THREAD_H
-#define THREAD_H
+// Precompiler directives //////////////////////////////////////////////////////////////
+#ifndef PRINT_h
+#define PRINT_h
 
 // Header files ///////////////////////////////////////////////////////////////////////
 #include <stdio.h>
@@ -26,23 +26,10 @@
 #include <pthread.h>
 #include "Main.h"
 #include "UploadFile.h"
-#include "PrintOperations.h"
-
-//Enumerations defined
-typedef enum {SEND_INTERRUPT, CHECK_INTERRUPT} InterruptCodes;
+#include "Thread.h"
+#include "ProcessManager.h"
 
 //STRUCTRES DEFINED////////////////////////////////////////////////////////////////////
-
-struct THREAD_INFO
-{
-  int procID; //The process ID
-  double waitTime;
-  char cmdLetter;
-  char* descriptor;
-  double currentTime;
-  int totalProcesses;
-  char* logTo;
-};
 
 /* These structure need to also be defined here for program to compile and run
    with no errors. */
@@ -50,11 +37,12 @@ struct PROCESSES;
 struct CONFIGFILE;
 struct METAFILE;
 
-
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////
-void *pause(void *ptr);
-int interuptHandler(InterruptCodes type, int procID, int totalProcesses);
-void printThread(struct THREAD_INFO *thread);
 
+/* Helper Function for ProcessManager.c/h */
+void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
+             int processNum, struct METAFILE *currentMetaData, int stringType);
+void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
+void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 
-#endif //End if THREAD_H
+#endif

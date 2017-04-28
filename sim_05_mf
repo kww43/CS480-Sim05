@@ -3,8 +3,8 @@ DEBUG = -g
 CFLAGS = -Wall -std=c99 -c $(DEBUG)
 LFLAGS = -Wall -std=c99 $(DEBUG)
 
-sim05 : Main.o UploadFile.o ProcessManager.o Thread.o ProcessQueue.o
-	$(CC) $(LFLAGS) Main.o UploadFile.o  ProcessManager.o Thread.o ProcessQueue.o -lpthread -o sim05
+sim05 : Main.o UploadFile.o ProcessManager.o Thread.o NonPremptive.o PrintOperations.o
+	$(CC) $(LFLAGS) Main.o UploadFile.o  ProcessManager.o Thread.o  NonPremptive.o PrintOperations.o -lpthread -o sim05
 
 Main.o : Main.c Main.h UploadFile.h ProcessManager.h
 	$(CC) $(CFLAGS) Main.c
@@ -18,8 +18,11 @@ ProcessManager.o : ProcessManager.c ProcessManager.h
 Thread.o : Thread.c
 	$(CC) $(CFLAGS) Thread.c
 
-ProcessQueue.o : ProcessQueue.c ProcessQueue.h
-	$(CC) $(CFLAGS) ProcessQueue.c
+NonPremptive.o : NonPremptive.c NonPremptive.h
+	$(CC) $(CFLAGS) NonPremptive.c
+
+PrintOperations.o : PrintOperations.c PrintOperations.h
+	$(CC) $(CFLAGS) PrintOperations.c
 
 clean:
 	\rm *.o sim05

@@ -21,6 +21,7 @@
 // Header files ///////////////////////////////////////////////////////////////////////
 #include "Thread.h"
 
+/********** UPDATED FUNCTION FOR SIM05 (# 1)***********/
 /*
  * Name       : pause
  * Description: pauses the program given the time in microseconds (0.000000)
@@ -93,7 +94,7 @@ int interuptHandler(InterruptCodes type, int procID, int totalProcesses)
     case SEND_INTERRUPT:
       interruptFlag = TRUE;
       interuptQueue[procID] = procID;
-      printf("Process %d Set in Interupt Queue\n", interuptQueue[procID]);
+      printf("OS: Sets Process %d in Interupt Queue\n", interuptQueue[procID]);
       return -1;
       break;
   }
@@ -101,6 +102,12 @@ int interuptHandler(InterruptCodes type, int procID, int totalProcesses)
   return -1;
 }
 
+/********** UPDATED FUNCTION FOR SIM05 (# 1)***********/
+/*
+ * Name       : printThread
+ * Description: Prints the end of thread IO
+ * Parameters : thread - the thread sturct containing needed data
+ */
 void printThread(struct THREAD_INFO *thread)
 {
   double timeOfDay = thread->currentTime + thread->waitTime;

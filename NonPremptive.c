@@ -27,11 +27,13 @@
 /*
 * ===  FUNCTION  ======================================================================
 *         Name:  processManager
-*  Description: Handles processes and their meta data
+*  Description: Handles processes and their meta data (operating system simulator)
 *
 *  Parameters : config - the structure that contains the configuration file
 *               metaData - The meta data for the  process
-* =====================================================================================
+*               PCB - the process control block (contains all the processes and their data)
+*               totalProcesses - The total number of processes in the PCB
+* ======================================================================================
 */
 void processManager(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
 {
@@ -370,11 +372,10 @@ void processManager(struct CONFIGFILE *config, struct METAFILE *metaData, struct
 
 //Helper functions
 /*
- * Name       : pause
+ * Name       : wait
  * Description: pauses the program given the time in microseconds (0.000000)
  *              based off of the current time of the timer.
- * Parameters : waitTime - The time to wait for (microseconds).
- *              currentTime - The current time of the timer.
+ * Parameters : waitTime - The time to wait for (microseconds). (void * ptr)
  * Note       : Uses pthreads to manage function
  */
 void* wait(void *ptr)

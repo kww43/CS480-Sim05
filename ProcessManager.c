@@ -123,17 +123,13 @@ void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, stru
         }
         currentPCB = headPCB;
       }
-      else
-      {
-        //nothing
-      }
     }
     //If scheduling == SRTF -> Prioritize Processes
     if(strcmp(config->CPUSched, "SRTF-P") == 0)
     {
       //Prioritize Processes
       currentPCB = prioritizeProcesses(headPCB,totalProcesses);
-      printf("Shortest: %d\n", currentPCB->totalRunTime);
+      printf("OS: Picks Process %d as the shortest process remaining.\n", currentPCB->processNumber);
     }
     //get next process
     currentMetaData = waitTillCMD(headMetaData, currentPCB->currentCMD);
@@ -207,6 +203,7 @@ void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, stru
       printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
     }
 
+  /* Process at the end of its operations so set to exit state*/
   else if(currentMetaData->cmdLetter == 'A'
      && strcmp(currentMetaData->descriptor, "end") == 0
      && currentPCB->state != BLOCKED)
@@ -216,7 +213,10 @@ void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, stru
     completedProcesses++;
     if(completedProcesses == totalProcesses) {break;}
   }
+
+  /* Interupt handling */
   processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
+  //Set all procceses in interupt queue to ready
   while(processReturning != -1)
   {
     //go to process and set to ready
@@ -235,9 +235,9 @@ void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, stru
 void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
 {
   //Variables///////////////////////////////////////////////////////////////////
-  int completedProcesses = 0;
-  int increment;
-  double currentQuantumTime = 0;
+  int processReturning;         // Used for interupt handling
+  int completedProcesses = 0;  //Number of completed processes
+  double currentQuantumTime = 0; //Quantum CPU time for the current process
   struct METAFILE *currentMetaData = metaData; //The current meta data operation
   struct METAFILE *headMetaData = metaData;
   double timeForCycle;  //The cycle time for meta data OP * processor/io time
@@ -246,8 +246,8 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
   struct PROCESSES *currentPCB = PCB; //Current process for the PCB
   FILE* logToFile = fopen(config->logFile ,"w"); //The log file handle to write to
   pthread_t threadIO; //IO Thread
-  //initRR(totalProcesses, headLink);
   struct THREAD_INFO *currentThread[totalProcesses];
+
   //initialize the array of thread structs
   for (int index = 0; index < totalProcesses; index++)
   {
@@ -293,8 +293,8 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
   currentPCB->state = RUNNING;
   printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 4);
 
+  /* Start the main loop for the simulator */
   currentMetaData = waitTillCMD(headMetaData, currentPCB->appStart);
-  int processReturning;
   currentPCB = headPCB;
   while(completedProcesses < totalProcesses)
   {
@@ -358,6 +358,7 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
       timeForCycle = ((double) currentMetaData->cycleTime * (double) config->ioTime) / 100000;
       currentQuantumTime += timeForCycle;
 
+      //Intialize the struct's data for the thread call
       currentThread[currentPCB->processNumber]->procID = currentPCB->processNumber;
       currentThread[currentPCB->processNumber]->totalProcesses = totalProcesses;
       currentThread[currentPCB->processNumber]->cmdLetter = currentMetaData->cmdLetter;
@@ -409,7 +410,7 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
     currentPCB->state = EXIT;
     printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 14);
     completedProcesses++;
-    if(completedProcesses == totalProcesses) {break;}
+    if(completedProcesses == totalProcesses || completedProcesses <= 2) {break;}
   }
 
   processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
@@ -420,210 +421,35 @@ void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PR
     currentPCB->state = READY;
     processReturning = interuptHandler(CHECK_INTERRUPT, 0, totalProcesses);
   }
+
  }
 
-
-   //System stop
-   timeOfDay += 0.000010;
-   printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 13);
-   fclose(logToFile);
+ //System stop
+ timeOfDay += 0.000010;
+ printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 13);
+ fclose(logToFile);
 }
 
 //HELPER FUNCTIONS//////////////////////////////////////////////////////////////////
-
-void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
-           int processNum, struct METAFILE *currentMetaData, int stringType)
-{
-if(strcmp(config->logTo, "Monitor") == 0)
-{
-  printMonitor(timeOfDay, processNum, currentMetaData, stringType);
-}
-else if(strcmp(config->logTo, "File") == 0)
-{
-  printFile(logToFile, timeOfDay, processNum, currentMetaData, stringType);
-}
-else if(strcmp(config->logTo, "Both") == 0)
-{
-  printMonitor(timeOfDay, processNum, currentMetaData, stringType);
-  printFile(logToFile, timeOfDay, processNum, currentMetaData, stringType);
-}
-}
-
-/*
- * Name       : printFile
- * Description: Prints to the log file when called.
- * Parameters : logTo - the file handle to write to
- *              timeOfDay - the time to write out
- *              processNum - The process's ID number
- *              metaData   - The meta data file
- *              stringType - The type of string to write out to the file
- */
-void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *metaData, int stringType)
-{
-  if(stringType == 0)
-  {
-    fprintf(logTo, "Time: %.6lf, System Start\n", timeOfDay);
-  }
-  else if(stringType == 1)
-  {
-    fprintf(logTo, "Time: %.6lf, Begin PCB Creation\n", timeOfDay);
-  }
-  else if(stringType == 2)
-  {
-    fprintf(logTo, "Time: %.6lf, All Processes set in New state\n", timeOfDay);
-  }
-  else if(stringType == 3)
-  {
-    fprintf(logTo, "Time: %.6lf, All Processes set in Ready state\n", timeOfDay);
-  }
-  else if(stringType == 4)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d set in Running state\n", timeOfDay, processNum);
-  }
-  else if(stringType == 5)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d %s output start\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if (stringType == 6)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d %s input start\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 7)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d %s output end\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 8)
-  {
-   fprintf(logTo, "Time: %.6lf, Process %d %s input end\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 9)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d Processer %s Start\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 10)
-  {
-    fprintf(logTo,"Time: %.6lf, Process %d Application %s \n", timeOfDay, processNum,
-          metaData->descriptor);
-  }
-  else if(stringType == 11)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d Processer %s End\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 12)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d Memory management %s action\n", timeOfDay, processNum,
-          metaData->descriptor);
-  }
-  else if(stringType == 13)
-  {
-    fprintf(logTo, "Time: %.6lf, System Stop\n", timeOfDay);
-  }
-  else if(stringType == 14)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, processNum);
-  }
-  else if(stringType == 15)
-  {
-    fprintf(logTo, "Time: %.6lf, Process %d set in Blocked state.\n", timeOfDay, processNum);
-  }
-}
-
-/*
- * Name       : printMonitor
- * Description: Prints out to the monitor.
- * Parameters : timeOfDay - the time to write out
- *              processNum - The process's ID number
- *              metaData   - The meta data file
- *              stringType - The type of string to print out to the monitor
- */
-void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, int stringType)
-{
-  if(stringType == 0)
-  {
-    printf("Time: %.6lf, System Start\n", timeOfDay);
-  }
-  else if(stringType == 1)
-  {
-    printf("Time: %.6lf, Begin PCB Creation\n", timeOfDay);
-  }
-  else if(stringType == 2)
-  {
-    printf("Time: %.6lf, All Processes set in New state\n", timeOfDay);
-  }
-  else if(stringType == 3)
-  {
-    printf("Time: %.6lf, All Processes set in Ready state\n", timeOfDay);
-  }
-  else if(stringType == 4)
-  {
-    printf("Time: %.6lf, Process %d set in Running state\n", timeOfDay, processNum);
-  }
-  else if(stringType == 5)
-  {
-    printf("Time: %.6lf, Process %d %s output start\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if (stringType == 6)
-  {
-    printf("Time: %.6lf, Process %d %s input start\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 7)
-  {
-    printf("Time: %.6lf, Process %d %s output end\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 8)
-  {
-    printf("Time: %.6lf, Process %d %s input end\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 9)
-  {
-    printf("Time: %.6lf, Process %d Processer %s Start\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 10)
-  {
-    printf("Time: %.6lf, Process %d Application %s \n", timeOfDay, processNum,
-          metaData->descriptor);
-  }
-  else if(stringType == 11)
-  {
-    printf("Time: %.6lf, Process %d Processer %s End\n", timeOfDay, processNum, metaData->descriptor);
-  }
-  else if(stringType == 12)
-  {
-    printf("Time: %.6lf, Process %d Memory management %s action\n", timeOfDay, processNum,
-          metaData->descriptor);
-  }
-  else if(stringType == 13)
-  {
-    printf("Time: %.6lf, System Stop\n", timeOfDay);
-  }
-  else if(stringType == 14)
-  {
-    printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, processNum);
-  }
-  else if(stringType == 15)
-  {
-    printf("Time: %.6lf, Process %d set in Blocked state.\n", timeOfDay, processNum);
-  }
-}
 
 /*
  * Name       : setProcessToReady
  * Description: Goes to the process in the PCB based off its numerical order.
  * Parameters : headPCB - The start of the meta data file.
- *              cmdNumber - The meta data operation to go to in the file.
+ *              processID - The process ID to set to ready
  * return     : The meta data operation based off the number passed in.
  */
-struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber)
+struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int processID)
 {
   struct PROCESSES *tempLink = headPCB;
 
-  while(tempLink->processNumber != cmdNumber)
+  while(tempLink->processNumber != processID)
   {
     tempLink = tempLink->nextProcess;
   }
 
   tempLink->state = READY;
-  printf("Process %d set in Ready State\n", tempLink->processNumber);
+  printf("OS: Sets Process %d in Ready State\n", tempLink->processNumber);
 
   return tempLink;
 }

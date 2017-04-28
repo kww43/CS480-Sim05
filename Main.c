@@ -24,6 +24,7 @@
 // Main Function Operating System Simulator ///////////////////////////////////////////
 int main(int argc, char *argv[])
 {
+  /* Error Checking */
   //Check if config file is an argument
   if(argc < 2)
   {
@@ -35,6 +36,7 @@ int main(int argc, char *argv[])
   FILE *configFH; //Configuration file handle
   configFH = fopen(argv[1], "r");
 
+  /* Error Checking */
   //Check if config file is valid
   if(configFH == NULL)
   {
@@ -61,6 +63,7 @@ int main(int argc, char *argv[])
   FILE *metaDataFH; //Meta data file handle
   metaDataFH = fopen(configFile->filePath, "r");
 
+    /* Error Checking */
   //Check if config file is valid
   if(metaDataFH == NULL)
   {
@@ -75,6 +78,7 @@ int main(int argc, char *argv[])
   struct PROCESSES *PCB;
   struct METAFILE *metaDataFile = uploadMetaData(metaDataFH, &PCB, &totalProcesses, configFile);
 
+  //Sort processes if SJF (SRTF handled in its own function)
   if(strcmp(configFile->CPUSched, "SJF-N") == 0)
   {
     printf("Sorting Processes based on SJF Scheduling....\n");
@@ -90,32 +94,23 @@ int main(int argc, char *argv[])
 
   printf("============================================\n\n");
 
-  //Intialize the ready queue
-  struct Queue *queueInfo = malloc(sizeof(struct Queue));
-  int que[totalProcesses];
-  initFCFS(queueInfo, que, totalProcesses);
-
   //Start the process manager
   printf("Begin Simulator\n\n");
 
+  /* Find the right CPU Scheduling and start the simulator */
   if(strcmp(configFile->CPUSched, "FCFS-N") == 0 || strcmp(configFile->CPUSched, "SJF-N") == 0)
   {
-    //processManager(configFile, metaDataFile, PCB, totalProcesses);
+    processManager(configFile, metaDataFile, PCB, totalProcesses);
   }
 
-  else if(strcmp(configFile->CPUSched, "FCFS-P") == 0)
-  {
-    processFCFS_SRTF(configFile, metaDataFile, PCB, totalProcesses);
-  }
-
-  else if(strcmp(configFile->CPUSched, "SRTF-P") == 0)
+  else if(strcmp(configFile->CPUSched, "FCFS-P") == 0 || strcmp(configFile->CPUSched, "SRTF-P") == 0)
   {
     processFCFS_SRTF(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "RR-P") == 0)
   {
-    //processRR_P(configFile, metaDataFile, PCB, totalProcesses);
+    processRR_P(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   //End the Simulation
