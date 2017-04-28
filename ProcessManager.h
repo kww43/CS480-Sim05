@@ -51,5 +51,6 @@ void printFile(FILE* logTo, double timeOfDay, int processNum, struct METAFILE *m
 void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, int stringType);
 struct METAFILE* waitTillCMD(struct METAFILE *headMetaData, int cmdNumber);
 struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber);
+struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProcesses);
 
 #endif //end define for PROCESS_MANAGER_h

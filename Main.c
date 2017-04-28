@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 
   else if(strcmp(configFile->CPUSched, "SRTF-P") == 0)
   {
-    processSRTF_P(configFile, metaDataFile, PCB, totalProcesses);
+    processFCFS_P(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "RR-P") == 0)

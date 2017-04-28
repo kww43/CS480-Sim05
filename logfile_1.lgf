@@ -1,0 +1,10 @@
+Time: 0.000000, System Start
+Time: 0.000005, Begin PCB Creation
+Time: 0.000009, All Processes set in New state
+Time: 0.000011, All Processes set in Ready state
+Time: 0.000017, Process 0 set in Running state
+Time: 0.000017, Process 0 keyboard input start
+Time: 0.001217, Process 1 Processer run Start
+Time: 1.001517, Process 1 Processer run End
+Time: 1.001517, Process 2 printer output start
+Time: 1.001927, System Stop

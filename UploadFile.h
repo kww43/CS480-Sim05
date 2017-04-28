@@ -55,9 +55,10 @@ struct PROCESSES //The Process control block
   int currentCMD;
   struct PROCESSES *nextProcess; //The process that follows after it
   int processNumber;             //The ID number of the process
-  int totalRunTime;              //The total cycle time for that process
+  int totalRunTime;             //The total cycle time for that process
   enum ProcesState {NEW, READY, RUNNING, BLOCKED, EXIT} state; //the state of the process
   int totalProcesses;
+  enum PrioritizedState {YES, NO} prioritized;     //Used to if prioritizeProcesses function
 };
 
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////

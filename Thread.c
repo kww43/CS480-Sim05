@@ -32,7 +32,7 @@
 void* pause(void *ptr)
 {
   int returnVal;
-  struct THREAD_INFO* thread = (struct THREAD_INFO *) ptr;
+  struct THREAD_INFO* thread = (struct THREAD_INFO*) ptr;
   double waitTime = thread->waitTime;
 
   clock_t start = clock();
