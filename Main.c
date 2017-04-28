@@ -100,22 +100,22 @@ int main(int argc, char *argv[])
 
   if(strcmp(configFile->CPUSched, "FCFS-N") == 0 || strcmp(configFile->CPUSched, "SJF-N") == 0)
   {
-    processManager(configFile, metaDataFile, PCB, totalProcesses);
+    //processManager(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "FCFS-P") == 0)
   {
-    processFCFS_P(configFile, metaDataFile, PCB, totalProcesses);
+    processFCFS_SRTF(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "SRTF-P") == 0)
   {
-    processFCFS_P(configFile, metaDataFile, PCB, totalProcesses);
+    processFCFS_SRTF(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   else if(strcmp(configFile->CPUSched, "RR-P") == 0)
   {
-    processRR_P(configFile, metaDataFile, PCB, totalProcesses);
+    //processRR_P(configFile, metaDataFile, PCB, totalProcesses);
   }
 
   //End the Simulation

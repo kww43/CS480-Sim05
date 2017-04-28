@@ -26,349 +26,16 @@
 
 /*
 * ===  FUNCTION  ======================================================================
-*         Name:  processManager
+*         Name:  processFCFS_SRTF
 *  Description: Handles processes and their meta data
 *
 *  Parameters : config - the structure that contains the configuration file
 *               metaData - The meta data for the  process
+                PCB - Process Control Block
+                totalProcesses - numebr of processes in file
 * =====================================================================================
 */
-void processManager(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
-{
-  //Variables///////////////////////////////////////////////////////////////////
-  struct METAFILE *currentMetaData = metaData; //The current meta data operation
-  struct METAFILE *headMetaData = metaData;
-  double timeForCycle;  //The cycle time for meta data OP * processor/io time
-  double timeOfDay;     //The timer for the simulator
-  struct PROCESSES *headPCB = PCB; //Start of processes for the PCB
-  struct PROCESSES *currentPCB = PCB; //Current process for the PCB
-  FILE* logToFile = fopen(config->logFile ,"w"); //The log file handle to write to
-  pthread_t threadIO; //IO Thread
-  pthread_t threadP; //Processor Thread
-
-  //Intialize the time and start the system
-  timeOfDay = 0.000000;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 0);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 0);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 0);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 0);
-  }
-
-  //Create the process
-  timeOfDay += 0.000005;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 1);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 1);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 1);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 1);
-  }
-
-
-  //Set Processes to new state
-  timeOfDay += 0.000004;
-  while(currentPCB != NULL)
-  {
-    currentPCB->state = NEW;
-    currentPCB = currentPCB->nextProcess;
-  }
-  currentPCB = headPCB;
-  //Print the result of setting processes to new state
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 2);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 2);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 2);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 2);
-  }
-
-
-
-  //Set Processes to Ready state
-  timeOfDay += 0.000002;
-  while(currentPCB != NULL)
-  {
-    currentPCB->state = READY;
-    currentPCB = currentPCB->nextProcess;
-  }
-  currentPCB = headPCB;
-  //Print the result of setting processes to ready state
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 3);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 3);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 3);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 3);
-  }
-
-
-  //Set a Process to Running state
-  timeOfDay += 0.000006;
-  currentPCB->state = RUNNING;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 4);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 4);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 4);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 4);
-  }
-
-  currentMetaData = waitTillCMD(headMetaData, currentPCB->appStart);
-  //Handle meta data for process
-  while(currentPCB != NULL)
-  {
-    //Handle I/O operation
-    if(currentMetaData->cmdLetter == 'O' || currentMetaData->cmdLetter == 'I')
-    {
-      //Print out start of Output Operation
-      if(currentMetaData->cmdLetter == 'O')
-      {
-        if(strcmp(config->logTo, "Monitor") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-        }
-        else if(strcmp(config->logTo, "File") == 0)
-        {
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-        }
-        else if(strcmp(config->logTo, "Both") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 5);
-        }
-      }
-
-      //Print out start of Input Operation
-      else if(currentMetaData->cmdLetter == 'I')
-      {
-        if(strcmp(config->logTo, "Monitor") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-        }
-        else if(strcmp(config->logTo, "File") == 0)
-        {
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-        }
-        else if(strcmp(config->logTo, "Both") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 6);
-        }
-      }
-
-      /* Get the time to wait for based on meta data operation cycle time * the
-         config file's I/O cycle time */
-      timeForCycle = ((double) currentMetaData->cycleTime * (double) config->ioTime) / 100000;
-
-      //Wait for time found from cycle time * I/O cycle time
-      pthread_create(&threadIO, NULL, (void *) &pause, (void *) &timeForCycle);
-      pthread_join(threadIO, NULL);
-
-      timeOfDay += timeForCycle;
-
-      //Print out Output operation end
-      if(currentMetaData->cmdLetter == 'O')
-      {
-        if(strcmp(config->logTo, "Monitor") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 7);
-        }
-        else if(strcmp(config->logTo, "File") == 0)
-        {
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 7);
-        }
-        else if(strcmp(config->logTo, "Both") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 7);
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 7);
-        }
-      }
-
-      //Print out Input operation end
-      else if(currentMetaData->cmdLetter == 'I')
-      {
-        if(strcmp(config->logTo, "Monitor") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 8);
-        }
-        else if(strcmp(config->logTo, "File") == 0)
-        {
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 8);
-        }
-        else if(strcmp(config->logTo, "Both") == 0)
-        {
-          printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 8);
-          printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 8);
-        }
-      }
-    }
-
-    //Handle Processor operation
-    else if(currentMetaData->cmdLetter == 'P')
-    {
-      //Print out start for processor operation
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 9);
-      }
-
-      //Get the cycle time from operation cycle time * config file's processor time
-      timeForCycle = ((double) currentMetaData->cycleTime * (double) config->processTime) / 100000;
-
-      //Wait for the time found from the cycle time
-      pthread_create(&threadP, NULL, (void *) &pause, (void *) &timeForCycle);
-      pthread_join(threadP, NULL);
-
-      timeOfDay += timeForCycle + 1;
-
-      //Print out end for processor operation
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 11);
-      }
-    }
-
-    //Handle Aplication Start and end
-    else if(currentMetaData->cmdLetter == 'A')
-    {
-      //Wait for the time found from the cycle time
-      timeOfDay += 0.000001;
-
-
-      //Print out Start or End of Application
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 10);
-      }
-    }
-
-    //Handle Memory Allocation
-    else if(currentMetaData->cmdLetter == 'M')
-    {
-      //Grab the time for printing out memory management
-      timeOfDay += 0.000001;
-
-      //Print out the time for Memory management action
-      if(strcmp(config->logTo, "Monitor") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-      }
-      else if(strcmp(config->logTo, "File") == 0)
-      {
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-      }
-      else if(strcmp(config->logTo, "Both") == 0)
-      {
-        printMonitor(timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-        printFile(logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
-      }
-    }
-
-    /* Adds a minor delay so that start operation is not the same of the last
-       operation */
-    timeOfDay += 0.000005;
-
-
-    //Get the next meta data operation
-    currentMetaData = currentMetaData->nextCMD;
-    currentPCB->currentCMD = currentMetaData->cmdOrder;
-
-    if(currentMetaData->cmdLetter == 'A' && strcmp(currentMetaData->descriptor, "end") == 0)
-    {
-      if(currentPCB->nextProcess == NULL)
-      {
-        printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, currentPCB->processNumber);
-        break;
-      }
-      currentPCB->state = EXIT;
-      printf("Time: %.6lf, Process %d set in Exit state.\n", timeOfDay, currentPCB->processNumber);
-      currentPCB = currentPCB->nextProcess;
-      currentMetaData = waitTillCMD(headMetaData, currentPCB->appStart);
-      currentPCB->state = RUNNING;
-      currentPCB->currentCMD = currentPCB->appStart;
-      timeOfDay += 0.0000004;
-      printf("Time: %.6lf, Process %d set in Running state.\n", timeOfDay, currentPCB->processNumber);
-    }
-  }
-
-  //System stop
-  timeOfDay += 0.000010;
-  if(strcmp(config->logTo, "Monitor") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 13);
-  }
-  else if(strcmp(config->logTo, "File") == 0)
-  {
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 13);
-  }
-  else if(strcmp(config->logTo, "Both") == 0)
-  {
-    printMonitor(timeOfDay, 0, currentMetaData, 13);
-    printFile(logToFile, timeOfDay, 0, currentMetaData, 13);
-  }
-  fclose(logToFile);
-}
-
-void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
+void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
 {
   //Variables///////////////////////////////////////////////////////////////////
   int completedProcesses = 0;
@@ -432,12 +99,6 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   int processReturning;
   while(completedProcesses < totalProcesses)
   {
-    //If scheduling == SRTF -> Prioritize Processes
-    if(strcmp(config->CPUSched, "SRTF-P") == 0)
-    {
-      //Prioritize Processes
-      headPCB = prioritizeProcesses(headPCB,totalProcesses);
-    }
     currentPCB = headPCB;
     while(currentPCB->state == BLOCKED || currentPCB->state == EXIT)
     {
@@ -467,6 +128,13 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
         //nothing
       }
     }
+    //If scheduling == SRTF -> Prioritize Processes
+    if(strcmp(config->CPUSched, "SRTF-P") == 0)
+    {
+      //Prioritize Processes
+      currentPCB = prioritizeProcesses(headPCB,totalProcesses);
+      printf("Shortest: %d\n", currentPCB->totalRunTime);
+    }
     //get next process
     currentMetaData = waitTillCMD(headMetaData, currentPCB->currentCMD);
     currentPCB->currentCMD = currentPCB->currentCMD + 1;
@@ -495,6 +163,8 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
          config file's I/O cycle time */
       timeForCycle = ((double) currentMetaData->cycleTime * (double) config->ioTime) / 100000;
 
+      currentPCB->totalRunTime = currentPCB->totalRunTime - (timeForCycle * 100000);
+
       currentThread[currentPCB->processNumber]->procID = currentPCB->processNumber;
       currentThread[currentPCB->processNumber]->totalProcesses = totalProcesses;
       currentThread[currentPCB->processNumber]->cmdLetter = currentMetaData->cmdLetter;
@@ -505,8 +175,6 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
 
       //Wait for time found from cycle time * I/O cycle time
       pthread_create(&threadIO, NULL, (void *) &pause, (void *) currentThread[currentPCB->processNumber]);
-      //pthread_join(threadIO, NULL);
-
       timeOfDay += timeForCycle;
     }
 
@@ -518,7 +186,7 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
 
       //Get the cycle time from operation cycle time * config file's processor time
       timeForCycle = ((double) currentMetaData->cycleTime * (double) config->processTime) / 100000;
-
+      currentPCB->totalRunTime = currentPCB->totalRunTime - (timeForCycle * 100000);
       clock_t start = clock();
 
       while ((clock() - start) / CLOCKS_PER_SEC < (timeForCycle));
@@ -539,14 +207,6 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
       printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 12);
     }
 
-  /* Adds a minor delay so that start operation is not the same of the last
-     operation */
-  //timeOfDay += 0.000005;
-
-  //Get the next meta data operation
-  //currentMetaData = currentMetaData->nextCMD;
-  //currentPCB->currentCMD = currentMetaData->cmdOrder;
-
   else if(currentMetaData->cmdLetter == 'A'
      && strcmp(currentMetaData->descriptor, "end") == 0
      && currentPCB->state != BLOCKED)
@@ -566,21 +226,10 @@ void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct 
   }
  }
 
-
    //System stop
    timeOfDay += 0.000010;
     printTo(config, logToFile, timeOfDay, currentPCB->processNumber, currentMetaData, 13);
    fclose(logToFile);
-}
-
-void processSRTF_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
-{
-
-}
-
-void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses)
-{
-  //TODO
 }
 
 //HELPER FUNCTIONS//////////////////////////////////////////////////////////////////
@@ -782,75 +431,39 @@ struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber)
   return tempLink;
 }
 
+
 /*
  * Name       : prioritizeProcesses
- * Description: Creates new links to prioritize processes (SRTF)
+ * Description: Returns shortest process to run
  * Parameters : headPCB - The start of the meta data file.
               : totalProcesses - Number of Process in file
- * return     : The new headPCB struct
+ * return     : The shortest process to run
  */
 struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProcesses)
 {
-  struct PROCESSES *tempHead;
   struct PROCESSES *currentPCB;
   struct PROCESSES *currentMinNode;
-  struct PROCESSES *tempStruct;
-  double currentMin = -1;
-  int outerLoop = 0;
-  int innerLoop = 0;
+  double currentMin = 100000;
 
-  for (outerLoop; outerLoop < totalProcesses; outerLoop++)
+  currentPCB = headPCB;
+  //lops until end of linked list of processes
+  while (currentPCB != NULL)
   {
-    currentPCB = headPCB;
-    currentMin = -1;
-    for (innerLoop; innerLoop < totalProcesses; innerLoop++)
+    //find shortest process
+    if (currentPCB->state == READY && currentPCB->totalRunTime < currentMin)
     {
-      if (currentPCB->prioritized == YES)
-      {
-        //nothing
-      }
-      else
-      {
-        if (currentPCB->totalRunTime < currentMin && currentPCB->prioritized != YES || currentMin == -1)
-        {
-          //new mininmum
-          currentMinNode = currentPCB;
-          currentMin = currentPCB->totalRunTime;
-        }
-      }
-      currentPCB = currentPCB->nextProcess;
+      currentMinNode = currentPCB;
+      currentMin = currentPCB->totalRunTime;
     }
-
-    currentMinNode->prioritized = YES;
-    if (tempHead == NULL)
+    else if (currentPCB->state == RUNNING && currentPCB->totalRunTime < currentMin)
     {
-      tempHead->appStart = currentMinNode->appStart;
-      tempHead->currentCMD = currentMinNode->currentCMD;
-      tempHead->processNumber = currentMinNode->processNumber;
-      tempHead->totalRunTime = currentMinNode->totalRunTime;
-      tempHead->state = currentMinNode->state;
-      tempHead->totalProcesses = currentMinNode->totalProcesses;
+      currentMinNode = currentPCB;
+      currentMin = currentPCB->totalRunTime;
     }
-    else
-    {
-      currentPCB = tempHead;
-      while(currentPCB->nextProcess != NULL)
-      {
-        currentPCB = currentPCB->nextProcess;
-      }
-      tempStruct->appStart = currentMinNode->appStart;
-      tempStruct->currentCMD = currentMinNode->currentCMD;
-      tempStruct->processNumber = currentMinNode->processNumber;
-      tempStruct->totalRunTime = currentMinNode->totalRunTime;
-      tempStruct->state = currentMinNode->state;
-      tempStruct->totalProcesses = currentMinNode->totalProcesses;
-
-      currentPCB->nextProcess = tempStruct;
-    }
-    printf("Current Min: %d\n", currentMinNode->totalRunTime);
+    //get next process
+    currentPCB = currentPCB->nextProcess;
   }
-
-  return headPCB;
+  return currentMinNode;
 }
 
 /*

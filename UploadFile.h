@@ -59,6 +59,7 @@ struct PROCESSES //The Process control block
   enum ProcesState {NEW, READY, RUNNING, BLOCKED, EXIT} state; //the state of the process
   int totalProcesses;
   enum PrioritizedState {YES, NO} prioritized;     //Used to if prioritizeProcesses function
+  int priority;
 };
 
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////

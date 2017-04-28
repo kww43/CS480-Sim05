@@ -39,10 +39,7 @@ struct METAFILE;
 //FUNCTION PROTOTYPES/////////////////////////////////////////////////////////////////////
 
 /* Main functions for ProcessManager.c/h */
-void processManager(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
-void processFCFS_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
-void processSRTF_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
-void processRR_P(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
+void processFCFS_SRTF(struct CONFIGFILE *config, struct METAFILE *metaData, struct PROCESSES *PCB, int totalProcesses);
 
 /* Helper Function for ProcessManager.c/h */
 void printTo(struct CONFIGFILE *config, FILE* logToFile, double timeOfDay,
@@ -52,5 +49,4 @@ void printMonitor(double timeOfDay, int processNum, struct METAFILE *metaData, i
 struct METAFILE* waitTillCMD(struct METAFILE *headMetaData, int cmdNumber);
 struct PROCESSES* setProcessToReady(struct PROCESSES *headPCB, int cmdNumber);
 struct PROCESSES* prioritizeProcesses(struct PROCESSES *headPCB, int totalProcesses);
-
 #endif //end define for PROCESS_MANAGER_h
